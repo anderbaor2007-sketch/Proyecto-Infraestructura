@@ -58,3 +58,31 @@ resource "aws_s3_bucket_policy" "fotos" {
   policy     = data.aws_iam_policy_document.fotos.json
   depends_on = [aws_s3_bucket_public_access_block.fotos]
 }
+
+resource "aws_s3_bucket_versioning" "fotos" {
+  bucket = aws_s3_bucket.fotos.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "fotos" {
+  bucket     = aws_s3_bucket.fotos.id
+  depends_on = [aws_s3_bucket_versioning.fotos]
+
+  rule {
+    id     = "limpieza"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+  }
+}

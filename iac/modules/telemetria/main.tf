@@ -56,6 +56,8 @@ resource "aws_kinesis_stream" "telemetria" {
   name             = "${var.nombre}-telemetria"
   retention_period = var.retencion_stream_horas
   shard_count      = 1
+  encryption_type = "KMS"
+  kms_key_id      = "alias/aws/kinesis"
 
   stream_mode_details {
     stream_mode = "PROVISIONED"
@@ -360,6 +362,34 @@ resource "aws_athena_workgroup" "telemetria" {
       encryption_configuration {
         encryption_option = "SSE_S3"
       }
+    }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "historico" {
+  bucket = aws_s3_bucket.historico.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "historico" {
+  bucket     = aws_s3_bucket.historico.id
+  depends_on = [aws_s3_bucket_versioning.historico]
+
+  rule {
+    id     = "limpieza"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
     }
   }
 }

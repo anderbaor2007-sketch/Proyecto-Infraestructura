@@ -15,6 +15,7 @@ resource "aws_rds_cluster" "this" {
   vpc_security_group_ids      = [var.grupo_seguridad_id]
   enable_http_endpoint        = true
   storage_encrypted           = true
+    iam_database_authentication_enabled = true
   backup_retention_period     = var.retencion_respaldo_dias
   preferred_backup_window     = "07:00-08:00"
   deletion_protection         = var.proteger_borrado
