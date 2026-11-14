@@ -33,7 +33,7 @@ variable "capas" {
 
 variable "retencion_logs" {
   type    = number
-  default = 30
+  default = 365
 }
 
 variable "permisos" {
