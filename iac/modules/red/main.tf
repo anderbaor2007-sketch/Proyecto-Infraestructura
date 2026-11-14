@@ -16,6 +16,10 @@ resource "aws_vpc" "this" {
   }
 }
 
+resource "aws_default_security_group" "this" {
+  vpc_id = aws_vpc.this.id
+}
+
 resource "aws_subnet" "privadas" {
   count             = length(local.zonas)
   vpc_id            = aws_vpc.this.id
