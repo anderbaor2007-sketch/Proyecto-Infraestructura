@@ -4,23 +4,23 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "aws_rds_cluster" "this" {
-  cluster_identifier          = "${var.nombre}-aurora"
-  engine                      = "aurora-postgresql"
-  engine_mode                 = "provisioned"
-  engine_version              = var.version_motor
-  database_name               = var.nombre_bd
-  master_username             = "terrafleet_admin"
-  manage_master_user_password = true
-  db_subnet_group_name        = aws_db_subnet_group.this.name
-  vpc_security_group_ids      = [var.grupo_seguridad_id]
-  enable_http_endpoint        = true
-  storage_encrypted           = true
-    iam_database_authentication_enabled = true
-  backup_retention_period     = var.retencion_respaldo_dias
-  preferred_backup_window     = "07:00-08:00"
-  deletion_protection         = var.proteger_borrado
-  skip_final_snapshot         = !var.proteger_borrado
-  final_snapshot_identifier   = var.proteger_borrado ? "${var.nombre}-aurora-final" : null
+  cluster_identifier                  = "${var.nombre}-aurora"
+  engine                              = "aurora-postgresql"
+  engine_mode                         = "provisioned"
+  engine_version                      = var.version_motor
+  database_name                       = var.nombre_bd
+  master_username                     = "terrafleet_admin"
+  manage_master_user_password         = true
+  db_subnet_group_name                = aws_db_subnet_group.this.name
+  vpc_security_group_ids              = [var.grupo_seguridad_id]
+  enable_http_endpoint                = true
+  storage_encrypted                   = true
+  iam_database_authentication_enabled = true
+  backup_retention_period             = var.retencion_respaldo_dias
+  preferred_backup_window             = "07:00-08:00"
+  deletion_protection                 = var.proteger_borrado
+  skip_final_snapshot                 = !var.proteger_borrado
+  final_snapshot_identifier           = var.proteger_borrado ? "${var.nombre}-aurora-final" : null
 
   serverlessv2_scaling_configuration {
     min_capacity = var.capacidad_min
@@ -33,14 +33,15 @@ resource "aws_rds_cluster" "this" {
 }
 
 resource "aws_rds_cluster_instance" "this" {
-  count              = 2
-  identifier         = "${var.nombre}-aurora-${count.index + 1}"
-  cluster_identifier = aws_rds_cluster.this.id
-  instance_class     = "db.serverless"
-  engine             = aws_rds_cluster.this.engine
-  engine_version     = aws_rds_cluster.this.engine_version
-  availability_zone  = var.zonas[count.index]
-  promotion_tier     = count.index
+  count                      = 2
+  identifier                 = "${var.nombre}-aurora-${count.index + 1}"
+  cluster_identifier         = aws_rds_cluster.this.id
+  instance_class             = "db.serverless"
+  engine                     = aws_rds_cluster.this.engine
+  engine_version             = aws_rds_cluster.this.engine_version
+  auto_minor_version_upgrade = true
+  availability_zone          = var.zonas[count.index]
+  promotion_tier             = count.index
 
   lifecycle {
     ignore_changes = [engine_version]
