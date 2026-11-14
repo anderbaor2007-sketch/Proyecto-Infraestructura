@@ -207,6 +207,7 @@ resource "aws_cloudfront_distribution" "this" {
     cached_methods         = ["GET", "HEAD"]
     cache_policy_id        = aws_cloudfront_cache_policy.sitio.id
     compress               = true
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.seguridad.id
   }
 
   dynamic "ordered_cache_behavior" {
@@ -275,4 +276,8 @@ resource "aws_s3_object" "configuracion" {
   key          = "config.js"
   content      = "window.TERRAFLEET = ${jsonencode(var.configuracion)};\n"
   content_type = "application/javascript; charset=utf-8"
+}
+
+data "aws_cloudfront_response_headers_policy" "seguridad" {
+  name = "Managed-SecurityHeadersPolicy"
 }
