@@ -1,6 +1,6 @@
 variable "region" {
   type    = string
-  default = "sa-east-1"
+  default = "us-east-2"
 }
 
 variable "proyecto" {

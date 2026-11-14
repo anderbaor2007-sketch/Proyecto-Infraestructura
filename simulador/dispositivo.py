@@ -9,7 +9,7 @@ import boto3
 def argumentos():
     analizador = argparse.ArgumentParser()
     analizador.add_argument("--endpoint", required=True)
-    analizador.add_argument("--region", default="sa-east-1")
+    analizador.add_argument("--region", default="us-east-2")
     analizador.add_argument("--equipo-id", required=True)
     analizador.add_argument("--empresa-id", required=True)
     analizador.add_argument("--latitud", type=float, default=-8.1116)
