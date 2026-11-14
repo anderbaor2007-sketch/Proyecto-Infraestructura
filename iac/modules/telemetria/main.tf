@@ -363,3 +363,31 @@ resource "aws_athena_workgroup" "telemetria" {
     }
   }
 }
+
+resource "aws_s3_bucket_versioning" "historico" {
+  bucket = aws_s3_bucket.historico.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "historico" {
+  bucket     = aws_s3_bucket.historico.id
+  depends_on = [aws_s3_bucket_versioning.historico]
+
+  rule {
+    id     = "limpieza"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+  }
+}

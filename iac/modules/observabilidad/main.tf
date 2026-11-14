@@ -138,3 +138,31 @@ resource "aws_cloudtrail" "this" {
   enable_log_file_validation    = true
   depends_on                    = [aws_s3_bucket_policy.auditoria]
 }
+
+resource "aws_s3_bucket_versioning" "auditoria" {
+  bucket = aws_s3_bucket.auditoria.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "auditoria" {
+  bucket     = aws_s3_bucket.auditoria.id
+  depends_on = [aws_s3_bucket_versioning.auditoria]
+
+  rule {
+    id     = "limpieza"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+  }
+}
